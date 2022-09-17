@@ -23,7 +23,7 @@ class EmployeesListItem extends Component {
         }))
     }
 
-    render () {
+    render() {
 
         const {name, salary} = this.props
 
