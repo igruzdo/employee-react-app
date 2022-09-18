@@ -18,7 +18,9 @@ class App extends Component {
         {name:'John', salary:'1000', increase: true, rise: false, id: 1},
         {name:'Bet', salary:'2000', increase: false, rise: false, id: 2},
         {name:'Fred', salary:'3000', increase: false, rise: false, id: 3}
-      ]
+      ],
+      term: '',
+      filter: 'all',
     }
     this.maxId = 3;
   }
@@ -55,24 +57,56 @@ class App extends Component {
         return item
       })
     }))
+  }
 
+  searchEmp = (items, term) => {
+    if(term.length === 0) {
+      return items;
+    }
+
+    return items.filter(item => {
+      return item.name.indexOf(term) > -1;
+    })
+  }
+
+  onUpdateSearch = (term) => {
+    this.setState({term});
+  }
+
+  filterPost = (items, filter) => {
+    switch (filter) {
+      case 'rise':
+        return items.filter(item => item.rise)
+      case '1000':
+        return items.filter(item => item.salary > 1000)
+      default:
+        return items
+    }
+  }
+
+  onFilerSelect = (filter) => {
+    this.setState({filter})
   }
 
   render() {
+    const {data, term, filter} = this.state;
     const employees = this.state.data.length;
-    const increased = this.state.data.filter(item => item.increase).length
+    const increased = this.state.data.filter(item => item.increase).length;
+    const visibleData = this.filterPost(this.searchEmp(data, term), filter);
+
+
     return (
       <div className="app">
           <AppInfo employees={employees} increased={increased}/>
   
           <div className="search-panel">
-              <SearchPanel/>
-              <AppFilter/>
+              <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
+              <AppFilter filter={filter} onFilerSelect={this.onFilerSelect}/>
           </div>
           
           <EmployeesList 
             onDelete={id => this.deleteItem(id)}
-            data={this.state.data}
+            data={visibleData}
             onToggleProp={this.onToggleProp}
           />
           <EmployeesAddForm addEployee={this.addEmployee}/>
